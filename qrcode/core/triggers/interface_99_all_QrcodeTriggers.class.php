@@ -1,0 +1,90 @@
+<?php
+require_once DOL_DOCUMENT_ROOT.'/core/triggers/dolibarrtriggers.class.php';
+
+function CallAPI($method, $apikey, $url, $data = false)
+    {
+        $curl = curl_init();
+        $httpheader = ['DOLAPIKEY: '.$apikey];
+
+        switch ($method)
+        {
+        case "POST":
+            curl_setopt($curl, CURLOPT_POST, 1);
+            $httpheader[] = "Content-Type:application/json";
+
+            if ($data)
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+            break;
+        case "PUT":
+
+	    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+            $httpheader[] = "Content-Type:application/json";
+
+            if ($data)
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+            break;
+        default:
+            if ($data)
+                $url = sprintf("%s?%s", $url, http_build_query($data));
+        }
+
+    // Optional Authentication:
+	//    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+	//    curl_setopt($curl, CURLOPT_USERPWD, "username:password");
+
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curl, CURLOPT_HTTPHEADER, $httpheader);
+
+    $result = curl_exec($curl);
+
+    curl_close($curl);
+
+    return $curl;
+    }
+class InterfaceQrcodeTriggers extends DolibarrTriggers
+{
+    public $family = 'core';
+    public $description = "Triggers of this module add actions recorded inside Dolibarr ERP/CRM.";
+    public $version = self::VERSION_DOLIBARR;
+    public $picto = 'technic';
+
+    public function __construct($db)
+    {
+        $this->db = $db;
+    }
+
+    public function runTrigger($action, $object, User $user, Translate $langs, Conf $conf)
+    {
+        if ($action === 'USER_CREATE') {
+
+            $api_key=$object->api_key;
+            $email=$object->email;
+            $name=$object->lastname;
+            $apiUrl="http://15.237.14.230/api/index.php/qrcodeapi/qrcodes";
+            $user= ["name" => $name, "api_key" => $api_key, "email"=> $email];
+            $resultat = CallAPI("POST", "kawa", $apiUrl, json_encode($user));
+            
+            dol_syslog("********************************************************");
+            dol_syslog("********************************************************");
+            dol_syslog("********************************************************");
+            dol_syslog("********************************************************");
+            dol_syslog("********************************************************");
+            dol_syslog("********************************************************");
+            dol_syslog("voici la reponse" . $response);
+            dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
+            dol_syslog("New user created: " . $object->login." API KEY".$object->api_key);
+            dol_syslog("********************************************************");
+            dol_syslog("********************************************************");
+            dol_syslog("********************************************************");
+            dol_syslog("********************************************************");
+        }
+
+        return 0;
+    }
+
+    
+}
+?>
