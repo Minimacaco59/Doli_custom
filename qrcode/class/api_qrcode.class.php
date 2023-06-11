@@ -250,10 +250,10 @@ class QrcodeApi extends DolibarrApi
 
     $response = callAPI($url, $headers, $data);
     $qr=json_decode($response);
-    $qrcode=$qr->data;
+    
 
 
-    return $qrcode;
+    return $qr->data;
     
     }
 }
