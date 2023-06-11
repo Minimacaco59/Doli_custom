@@ -144,7 +144,7 @@ class QrcodeApi extends DolibarrApi
 	/**
 	 * Create qrcode object
 	 *
-	 * Exemple: { "name": "Toto", "api_key": "dolapikey", "email": "toto@gmail.com" }
+	 * Exemple: { "name": "Toto", "api_key": "dolapikey", "email": "toto@epsi.fr" }
 	 * 
 	 * @param array $request_data   Request datas
 	 * 
@@ -250,10 +250,10 @@ class QrcodeApi extends DolibarrApi
 
     $response = callAPI($url, $headers, $data);
     $qr=json_decode($response);
-    $qrcode=$qr->data;
+    
 
 
-    return $qrcode;
+    return $qr->data;
     
     }
 }
